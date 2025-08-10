@@ -1,0 +1,4 @@
+eggs
+cereal
+bread
+milk

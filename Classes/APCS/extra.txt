@@ -1,0 +1,3 @@
+javadoc -d Javadocs ChanceRow.java && javadoc -d Javadocs Dice.java && javadoc -d Javadocs Die.java && javadoc -d Javadocs FixedAmountRow.java && javadoc -d Javadocs FullHouseRow.java && javadoc -d Javadocs NumberRow.java && javadoc -d Javadocs NumOfAKindRow.java && javadoc -d Javadocs ScoreRow.java && javadoc -d Javadocs ScoreSheet.java && javadoc -d Javadocs StraightRow.java && javadoc -d Javadocs SumAllRow.java && javadoc -d Javadocs YahtzeeRow.java && javadoc -d Javadocs Yahtzee.java
+
+javadoc -d Javadocs 

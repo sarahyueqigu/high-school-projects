@@ -1,0 +1,203 @@
+# This program will run a tic-tac-toe game for two players. Each player will
+# be addressed by their name, and they can choose their own characters to play
+# the game with. The program will end once there is a win or a draw.
+
+# Difficulties: Initially in my design document, I had a function called indices_list()
+# that stored the user's moves, that would be used when determining a win in the
+# win_or_not() function. However, I realized that it could be easily simplified
+# and included into the main function, and that a list to store the user's moves
+# wasn't needed at all. I was also not sure how I would have stored the indices
+# into the list, because that would mean that I would have two indices (one would
+# be the list index inside the array, and the other would be the element
+# inside the list index) for one move. It would have overcomplicated a lot of things.
+# So instead, I just checked for certain positions in the win_or_not() function
+# that determined if the user's symbols in different parts of the array were equal
+# to one another.
+
+# I also got rid of the function insert_answer(), because I realized that I did
+# not need to manually remove the numbers in the cells and insert the users'
+# symbols in their place. Instead, I could just set the appropriate indices as
+# the users' symbols, which would replace the starting cell values in the list.
+
+# Another thing I did was create the new function occupied(). I originally had
+# the program check whether or not a cell was occupied in the valid_move() function,
+# but I quickly realized that my design was inefficient because it first had to
+# check whether or not the user's response was valid at all. Then, it had to check
+# its individual values. So, I changed it to check for the individual values directly,
+# meaning that I had no physical indicator of whether or not the user's move was valid.
+# As a result, I created a new function that would be called within every individual
+# if structure required valid input.
+
+# Sarah Gu
+
+# Determine whether or not the symbol given by the user is valid. Provide
+# feedback for the user and keep asking them for a valid character to use.
+def valid_character(name, otherSymbol = ''):
+    character = input(name + ', enter the symbol/letter you want to use: ')
+    characterValid = False # Set characterValid to false so that all of the conditions (for
+    # the character to be valid) can be checked at least once
+    while characterValid == False:
+        if len(character) > 1:
+            character = input('You cannot choose more than one character as your letter/symbol. Enter another symbol/letter you want to use: ')
+        elif character.isdigit():
+            character = input('You cannot choose a number as your letter/symbol. Enter another symbol/letter you want to use: ')
+        elif character == '':
+            character = input('You cannot choose nothing as your letter/symbol. Enter a symbol/letter you want to use: ')
+        elif character == otherSymbol:
+            character = input('You cannot use the same symbol as your opponent. Enter another symbol/letter you want to use: ')
+        else:
+            characterValid = True
+    return character
+
+# Print the board, with the correct cell values
+def board(cellPosition):
+    print('+---+---+---+')
+    for row in cellPosition:
+        for cell in row:
+            print('| ' + cell, end = ' ')
+        print('|') # Include the last cell barrier for formatting
+        print('+---+---+---+')
+
+# Check to see whether or not a cell is occupied. # If it is not, then replace
+# the position (that the user chose) with the user's symbol
+def occupied(entireList, cellValueRow, elementIndex, currentPlayer1, opponent):
+    if entireList[cellValueRow][elementIndex] != currentPlayer1 \
+    and entireList[cellValueRow][elementIndex] != opponent:
+        validity = True
+        entireList[cellValueRow][elementIndex] = currentPlayer1 # Replace position
+        # with the user's symbol. No need to return this list, because it will
+        # altered already in the main list
+    else:
+        print('Sorry, this position is already occupied. Chose a different one.')
+        validity = False
+    return validity
+
+# Determine whether or not the user's move is valid, and print the appropriate
+# statement if it is not. If it is, then replace the user's move with their symbol
+# in the main list that stores the cell values.
+def valid_move(userMove, playerSymbol, listOfCells, opponentSymbol):
+    if userMove  == '4' or userMove == '5' or userMove  == '6':
+        rowInCellValue = 1 # Index of list in 2D cell list
+        elementInRow = int(userMove) - 4 # Index of element in 2D cell list
+        valid = occupied(listOfCells, rowInCellValue, elementInRow, playerSymbol, opponentSymbol) # Check
+        # to see if the cell is occupied
+    elif userMove == '1' or userMove == '2' or userMove == '3':
+        rowInCellValue = 0
+        elementInRow = int(userMove) - 1
+        valid = occupied(listOfCells, rowInCellValue, elementInRow, playerSymbol, opponentSymbol)
+    elif userMove == '7' or userMove == '8' or userMove == '9':
+        rowInCellValue = 2
+        elementInRow = int(userMove) - 7
+        valid = occupied(listOfCells, rowInCellValue, elementInRow, playerSymbol, opponentSymbol)
+    # If the move is not valid...
+    else:
+        try:
+            userMove = float(userMove)
+            if userMove < 1:
+                print('You entered a value that is too low.')
+            elif userMove > 9:
+                print('You entered a value that is too high.')
+        except ValueError:
+            if len(userMove) > 1:
+                print('Enter a number, not a bunch of characters.')
+            else:
+                if userMove.isalpha():
+                    print('You can only enter a number, not a letter.')
+                else:
+                    print('You can only enter a number, not a symbol.')
+        valid = False
+    return valid
+
+# Determine whether or not the current player is a winner
+def win_or_not(cellValue1):
+    winner = False
+    for eachValue in range(0, 3):
+        for eachValue1 in range(0, 3):
+            currentRowTracker = cellValue1[eachValue][eachValue1] # This should check for a
+            # win in a row (the element index within the list of the array changes
+            # after each iteration until 3 iterations pass; then the process repeats
+            # with a new list index)
+            currentColumnTracker = cellValue1[eachValue1][eachValue] # This should check
+            # for a win in a column (the list index within the array changes,
+            # while the element index stays constant until 3 iterations pass; then
+            # the process repeats with a new element index)
+
+            # After each iteration, store the list value in a different variable
+            # so that you can compare them at the end.
+            if eachValue1 == 0:
+                rowTracker = currentRowTracker
+                columnTracker = currentColumnTracker
+            elif eachValue1 == 1:
+                rowTracker1 = currentRowTracker
+                columnTracker1 = currentColumnTracker
+            elif eachValue1 == 2: # Comparison time
+                if (currentRowTracker == rowTracker) and (currentRowTracker == rowTracker1):
+                    winner = True
+                elif (currentColumnTracker == columnTracker) and (currentColumnTracker == columnTracker1):
+                    winner = True
+    # Check for diagonals
+    if cellValue1[1][1] == cellValue1[0][0] and cellValue1[1][1] == cellValue1[2][2]:
+        winner = True
+    elif cellValue1[1][1] == cellValue1[0][2] and cellValue1[1][1] == cellValue1[2][0]:
+        winner = True
+    return winner
+
+print('Welcome to the "Tic-Tac-Toe" game!')
+print('\nRules:')
+print('1. Do not enter the same name or symbol to use during the game. Do not', end = '')
+print(' use numbers or multiple characters as your symbol.')
+print('2. Use the numbers to locate where you want to place your move. Do not', end = '')
+print(' enter an already occupied square.')
+print('3. You will be playing in alternating turns.')
+print('4. Place three of your symbols in a row to win!')
+print()
+
+name1 = input('Player 1, enter your name: ')
+while name1 == '':
+    name1 = input('Player 1, you cannot enter nothing as your name. Enter another name: ')
+
+name2 = input('Player 2, enter your name: ')
+nameValid = False # Set nameValid to false so that all of the conditions (for
+# the name to be valid) can be checked at least once
+while nameValid == False:
+    if name1 == name2:
+        name2 = input('Player 2, you cannot enter the same name as ' + name1 + '. Enter another name: ')
+    elif name2 == '':
+        name2 = input('Player 2, you cannot enter nothing as your name. Enter a name: ')
+    else:
+        nameValid = True
+
+symbol1 = valid_character(name1)
+symbol2 = valid_character(name2, symbol1)
+
+win = False
+cellValue = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']] # Initial cell values
+counter = 0
+
+board(cellValue)
+print()
+
+# Main program
+while win == False and counter < 9:
+    if counter % 2 == 0:
+        currentPlayer = name1
+        currentSymbol = symbol1
+        otherPlayer = name2 # Need this to distinguish one player from the other in valid_move()
+    elif counter % 2 == 1:
+        currentPlayer = name2
+        currentSymbol = symbol2
+        otherPlayer = name1 # Need this to distinguish one player from the other in valid_move()
+    position = input(currentPlayer + ', enter your choice: ')
+    answerValid = valid_move(position, currentSymbol, cellValue, otherPlayer)
+    # Keep asking for the user's move until they give a valid response
+    while answerValid == False:
+        position = input(currentPlayer + ', enter your choice: ')
+        answerValid = valid_move(position, currentSymbol, cellValue, otherPlayer)
+    board(cellValue)
+    print()
+    win = win_or_not(cellValue)
+    counter += 1
+    if win == True:
+        print('Winner:', currentPlayer + '. Congratulations!')
+    elif counter == 9: # The counter should check for the draw, when there is also no win
+        print('Draw: There is no winner.')
